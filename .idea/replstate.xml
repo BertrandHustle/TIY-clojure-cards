@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ReplState" timestamp="1465328195097">{:repl-history {:ide [], :local [&quot;(create-deck)&quot; &quot;(count(create-hands))&quot; &quot;(count(create-deck))&quot; &quot;(count(create-hands(create-deck)))&quot; &quot;(-main)&quot;], :remote []}}</component>
+</project>
