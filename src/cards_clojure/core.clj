@@ -4,12 +4,14 @@
 (def ranks (range 1 14))
 
 ;"helper" functions
-(defn ascending-count [num]
-  (conj '()
-        (inc(inc(inc num)))
-        (inc(inc num))
-        (inc num)
-        num))
+
+(defn ascend-count [hand]
+  (loop [i 5 result [] num (first(sort(map :rank hand)))]
+    (if (zero? i)
+      (sort result)
+      (recur (dec i)
+       (conj result
+         num) (inc num) ))))
 
 (defn drop-first-n [n hand]
   (drop n (sort (map :rank hand))))
@@ -26,11 +28,11 @@
           rank ranks]
       {:suit suit :rank rank})))
 
-(def test-hand #{{:suit :hearts, :rank 3}
-  {:suit :clubs, :rank 1}
-  {:suit :hearts, :rank 2}
-  {:suit :spades, :rank 3}
- {:suit :spades, :rank 1}})
+(def test-hand #{{:suit :hearts, :rank 6}
+  {:suit :clubs, :rank 3}
+  {:suit :hearts, :rank 7}
+  {:suit :spades, :rank 4}
+ {:suit :spades, :rank 5}})
 
 (defn create-hands [deck]
   (set
@@ -43,18 +45,19 @@
       #{card1 card2 card3 card4 card5})))
 
 (defn winning-hand [hand1 hand2]
-  )
+  ;hand rankings
+  (let [royal-flush 1
+        straight-flush 2
+        four-of-a-kind 3
+        full-house 4
+        flush 5
+        straight 6
+        three-of-a-kind 7
+        two-pair 8
+        pair 9]
+    ))
 
 ;poker hands
-
-(defn royal-flush? [hand]
-  (and (straight-flush? hand)
-       (=
-         (sort (map :rank hand))
-         ('(1 10 11 12 13)))))
-
-(defn straight-flush? [hand]
-  (and (straight? hand) (flush? hand)))
 
 (defn four-of-a-kind? [hand]
   (apply = (map :rank hand)))
@@ -76,8 +79,17 @@
 
 (defn straight? [hand]
   (or (= (sort (map :rank hand))
-         (ascending-count (first(sort (map :rank hand)))))
+         (ascend-count hand))
       (high-straight? hand)))
+
+(defn straight-flush? [hand]
+  (and (straight? hand) (flush? hand)))
+
+(defn royal-flush? [hand]
+  (and (straight-flush? hand)
+       (=
+         (sort (map :rank hand))
+         ('(1 10 11 12 13)))))
 
 (defn three-of-a-kind? [hand]
   (or
