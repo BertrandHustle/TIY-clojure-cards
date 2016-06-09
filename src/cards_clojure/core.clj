@@ -28,11 +28,11 @@
           rank ranks]
       {:suit suit :rank rank})))
 
-(def test-hand #{{:suit :hearts, :rank 6}
+(def test-hand #{{:suit :diamonds, :rank 3}
   {:suit :clubs, :rank 3}
-  {:suit :hearts, :rank 7}
-  {:suit :spades, :rank 4}
- {:suit :spades, :rank 5}})
+  {:suit :hearts, :rank 5}
+  {:suit :hearts, :rank 3}
+ {:suit :spades, :rank 3}})
 
 (defn create-hands [deck]
   (set
@@ -60,7 +60,9 @@
 ;poker hands
 
 (defn four-of-a-kind? [hand]
-  (apply = (map :rank hand)))
+  (or
+    (apply = (drop-first-n 1 hand))
+    (apply = (drop-last-n 1 hand))))
 
 (defn full-house? [hand]
   (or
@@ -94,18 +96,30 @@
 (defn three-of-a-kind? [hand]
   (or
     (apply = (drop-first-n 2 hand))
-    (apply = (drop-last-n 2 hand)))
+    (apply = (drop-last-n 2 hand))
+    (apply = (drop-first-n 1 (drop 1 hand))))
   )
 
+;todo fix end/begin cases
 (defn two-pair? [hand]
-  (and
-    (apply = (drop-first-n 3 hand))
-    (apply = (drop-last-n 3 hand))))
+  (or
+    ;middle case
+    (and
+      (apply = (drop-first-n 3 hand))
+      (apply = (drop-last-n 3 hand)))
+
+    ;end case
+    (and
+      (apply = (drop 2(drop-first-n 1 hand)))
+      (apply = (drop-last 2(drop-first-n 1 hand))))
+
+    ;beginning case
+    (and
+      (apply = (drop 2(drop-last-n 1 hand)))
+      (apply = (drop-last 2(drop-last-n 1 hand))))))
 
 (defn pair? [hand]
-  (or
-    (apply = (drop-first-n 3 hand))
-    (apply = (drop-last-n 3 hand))))
+  (not= (count (dedupe (map :rank hand))) 5))
 
 (defn -main []
   (let [deck (create-deck)
